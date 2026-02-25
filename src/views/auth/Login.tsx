@@ -230,11 +230,6 @@ export default function Login() {
               </Link>
             </p>
 
-            {/* Conta de teste para painel admin */}
-            <p className="mt-6 pt-6 border-t border-gray-100 dark:border-night-border text-center text-xs text-gray-500 dark:text-night-muted">
-              Teste (painel admin): <span className="font-mono text-olive dark:text-olive-light">teste@odontologico.com</span> /{' '}
-              <span className="font-mono text-olive dark:text-olive-light">123456</span>
-            </p>
           </motion.div>
         </div>
       </div>
