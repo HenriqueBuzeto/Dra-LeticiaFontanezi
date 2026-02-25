@@ -166,3 +166,30 @@ html::-webkit-scrollbar-thumb:hover {
   background-size: 200% 100%;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
 }
+
+/* Auth mobile: card flutuante sobre o hero */
+.auth-mobile-card {
+  @apply rounded-t-[1.75rem] md:rounded-none bg-white/95 backdrop-blur-md md:backdrop-blur-none md:bg-white shadow-[0_-8px_32px_rgba(0,0,0,0.08)] md:shadow-none;
+  padding-bottom: max(env(safe-area-inset-bottom, 0), 1rem);
+}
+.auth-input {
+  @apply w-full pl-11 pr-4 py-3.5 rounded-2xl border-2 border-gray-mist outline-none transition-all duration-200 bg-gray-mist/30 text-gray-900;
+}
+.auth-input:focus {
+  @apply border-olive bg-white;
+  box-shadow: 0 0 0 3px rgba(131, 167, 129, 0.18);
+}
+.auth-btn-mobile {
+  background: linear-gradient(135deg, #83a781 0%, #9bb999 50%, #83a781 100%);
+  background-size: 200% 100%;
+  box-shadow: 0 6px 20px rgba(131, 167, 129, 0.35), 0 1px 0 rgba(255, 255, 255, 0.12) inset;
+  transition: transform 0.2s ease, box-shadow 0.25s ease, background-position 0.4s ease;
+}
+.auth-btn-mobile:active {
+  transform: scale(0.98);
+}
+.auth-btn-mobile:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(131, 167, 129, 0.4), 0 2px 0 rgba(255, 255, 255, 0.15) inset;
+  background-position: 100% 0;
+}

@@ -12,6 +12,7 @@ import { loadSlim } from '@tsparticles/slim'
 import { Mail, Lock, User, Phone, Calendar, ArrowRight, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/components/ui/Toaster'
+import { getApiErrorMessage } from '@/lib/apiError'
 
 const schema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
@@ -27,11 +28,14 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
+const DENTIST_IMAGE = 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&q=80'
+
 export default function Register() {
   const router = useRouter()
   const { register: registerUser } = useAuth()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
+  const [particlesReady, setParticlesReady] = useState(false)
 
   const {
     register,
@@ -55,141 +59,174 @@ export default function Register() {
       toast('Cadastro realizado com sucesso!', 'success')
       router.replace('/dashboard')
     } catch (err: unknown) {
-      const msg = err && typeof err === 'object' && 'response' in err
-        ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
-        : 'Erro ao cadastrar.'
-      toast(msg || 'Erro ao cadastrar.', 'error')
+      toast(getApiErrorMessage(err, 'Erro ao cadastrar.'), 'error')
     } finally {
       setLoading(false)
     }
   }
 
-  const [particlesReady, setParticlesReady] = useState(false)
   useEffect(() => {
     initParticlesEngine(async (engine) => {
       await loadSlim(engine)
     }).then(() => setParticlesReady(true))
   }, [])
 
+  const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.08 } } }
+  const item = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }
+
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
-      <div className="absolute inset-0 z-0">
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Mobile: hero mais alto + gradiente + partículas */}
+      <div className="md:hidden h-52 sm:h-64 relative overflow-hidden shrink-0">
+        <div className="absolute inset-0 bg-cover bg-center scale-105" style={{ backgroundImage: `url(${DENTIST_IMAGE})` }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-olive/85 to-olive/75" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
         {particlesReady && (
           <Particles
-            id="tsparticles-register"
+            id="tsparticles-register-mobile"
+            className="absolute inset-0"
             options={{
               fullScreen: { enable: false },
-              particles: {
-                number: { value: 40 },
-                color: { value: ['#83a781', '#9bb999'] },
-                opacity: { value: 0.35 },
-                size: { value: { min: 1, max: 3 } },
-                move: { enable: true, speed: 1.2 },
-              },
+              particles: { number: { value: 28 }, color: { value: ['#ffffff', '#E0E5E9'] }, opacity: { value: { min: 0.2, max: 0.45 } }, size: { value: { min: 1, max: 2.5 } }, move: { enable: true, speed: { min: 0.3, max: 1 } } },
               background: { color: 'transparent' },
             }}
           />
         )}
-        <div className="absolute inset-0 bg-gradient-premium opacity-90" />
+        <div className="absolute inset-0 flex flex-col justify-end p-5 pb-7 text-white">
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.4 }} className="text-sm font-medium text-white/90 uppercase tracking-widest">
+            Ortodontia Premium
+          </motion.p>
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.4 }} className="text-2xl font-bold tracking-tight drop-shadow-sm">
+            Dra. Letícia Fontanezi
+          </motion.p>
+        </div>
       </div>
 
-      <div className="relative z-10 flex-1 flex flex-col justify-center px-6 py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
-          <h1 className="text-2xl font-bold text-white">Criar conta</h1>
-          <p className="text-white/80 text-sm">Preencha seus dados</p>
-        </motion.div>
+      {/* Desktop: lado esquerdo */}
+      <div className="hidden md:flex md:w-1/2 lg:w-[55%] relative overflow-hidden">
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${DENTIST_IMAGE})` }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-olive/95 via-olive/80 to-olive-dark/90" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+        {particlesReady && (
+          <Particles
+            id="tsparticles-register"
+            className="absolute inset-0"
+            options={{
+              fullScreen: { enable: false },
+              particles: { number: { value: 80 }, color: { value: ['#ffffff', '#E0E5E9', '#a5f3fc'] }, opacity: { value: { min: 0.2, max: 0.6 } }, size: { value: { min: 1, max: 4 } }, move: { enable: true, speed: { min: 0.5, max: 2 } } },
+              interactivity: { detect_on: 'canvas', events: { onHover: { enable: true, mode: 'grab' } }, modes: { grab: { distance: 140, links: { opacity: 0.4 } } } },
+              background: { color: 'transparent' },
+            }}
+          />
+        )}
+        <div className="relative z-10 flex flex-col justify-end p-8 lg:p-12 text-white">
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="text-lg font-medium text-white/90 max-w-sm">
+            Cuidando do seu sorriso com tecnologia e humanização.
+          </motion.p>
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="text-2xl lg:text-3xl font-bold mt-2">Dra. Letícia Fontanezi</motion.p>
+          <p className="text-white/70 text-sm mt-1">Ortodontia &amp; Odontologia Premium</p>
+        </div>
+      </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="card-glass p-6 rounded-3xl"
-        >
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nome completo</label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input {...register('nome')} placeholder="Seu nome" className="input-field pl-10" />
-              </div>
-              {errors.nome && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                  <AlertCircle className="h-4 w-4" /> {errors.nome.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input {...register('email')} type="email" placeholder="seu@email.com" className="input-field pl-10" />
-              </div>
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                  <AlertCircle className="h-4 w-4" /> {errors.email.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Telefone (opcional)</label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input {...register('telefone')} placeholder="(11) 99999-9999" className="input-field pl-10" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Data de nascimento (opcional)</label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input {...register('dataNascimento')} type="date" className="input-field pl-10" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input {...register('senha')} type="password" placeholder="Mínimo 6 caracteres" className="input-field pl-10" />
-              </div>
-              {errors.senha && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                  <AlertCircle className="h-4 w-4" /> {errors.senha.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar senha</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input {...register('confirmarSenha')} type="password" placeholder="Repita a senha" className="input-field pl-10" />
-              </div>
-              {errors.confirmarSenha && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
-                  <AlertCircle className="h-4 w-4" /> {errors.confirmarSenha.message}
-                </p>
-              )}
-            </div>
-            <motion.button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full flex items-center justify-center gap-2"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {loading ? 'Cadastrando...' : 'Cadastrar'}
-              <ArrowRight className="h-5 w-5" />
-            </motion.button>
-          </form>
-          <p className="mt-6 text-center text-sm text-gray-600">
-            Já tem conta?{' '}
-            <Link href="/auth/login" className="font-medium text-olive hover:underline">
-              Entrar
-            </Link>
-          </p>
-        </motion.div>
+      {/* Lado direito: formulário — mobile = card flutuante; desktop = layout normal */}
+      <div className="flex-1 flex flex-col md:justify-center px-0 md:px-6 sm:px-10 lg:px-16 py-0 md:py-8 bg-transparent md:bg-white">
+        <div className="w-full max-w-md mx-auto flex-1 md:flex-none flex flex-col">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="auth-mobile-card -mt-6 md:mt-0 flex-1 px-5 pt-6 pb-10 md:px-0 md:pt-0 md:pb-0 md:rounded-none md:shadow-none overflow-y-auto scrollbar-modern"
+          >
+            <motion.div variants={container} initial="hidden" animate="show">
+              <motion.div variants={item} className="md:hidden mb-1">
+                <p className="text-xs font-medium text-olive uppercase tracking-wider">Sistema Odontológico</p>
+              </motion.div>
+              <motion.h2 variants={item} className="text-2xl sm:text-3xl font-bold text-gray-900">
+                Criar conta
+              </motion.h2>
+              <motion.p variants={item} className="text-gray-500 mt-1 mb-5 md:mb-6 text-sm sm:text-base">
+                Preencha seus dados para continuar
+              </motion.p>
+
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <motion.div variants={item}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Nome completo</label>
+                  <div className="relative">
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+                    <input {...register('nome')} placeholder="Seu nome" className="auth-input md:input-field md:pl-10" />
+                  </div>
+                  {errors.nome && (
+                    <p className="mt-1.5 text-sm text-red-500 flex items-center gap-1"><AlertCircle className="h-4 w-4 shrink-0" /> {errors.nome.message}</p>
+                  )}
+                </motion.div>
+                <motion.div variants={item}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">E-mail</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+                    <input {...register('email')} type="email" placeholder="seu@email.com" className="auth-input md:input-field md:pl-10" />
+                  </div>
+                  {errors.email && (
+                    <p className="mt-1.5 text-sm text-red-500 flex items-center gap-1"><AlertCircle className="h-4 w-4 shrink-0" /> {errors.email.message}</p>
+                  )}
+                </motion.div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <motion.div variants={item}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Telefone <span className="text-gray-400 font-normal">(opcional)</span></label>
+                    <div className="relative">
+                      <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+                      <input {...register('telefone')} placeholder="(11) 99999-9999" className="auth-input md:input-field md:pl-10" />
+                    </div>
+                  </motion.div>
+                  <motion.div variants={item}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Nascimento <span className="text-gray-400 font-normal">(opcional)</span></label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+                      <input {...register('dataNascimento')} type="date" className="auth-input md:input-field md:pl-10" />
+                    </div>
+                  </motion.div>
+                </div>
+                <motion.div variants={item}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Senha</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+                    <input {...register('senha')} type="password" placeholder="Mínimo 6 caracteres" className="auth-input md:input-field md:pl-10" />
+                  </div>
+                  {errors.senha && (
+                    <p className="mt-1.5 text-sm text-red-500 flex items-center gap-1"><AlertCircle className="h-4 w-4 shrink-0" /> {errors.senha.message}</p>
+                  )}
+                </motion.div>
+                <motion.div variants={item}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirmar senha</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+                    <input {...register('confirmarSenha')} type="password" placeholder="Repita a senha" className="auth-input md:input-field md:pl-10" />
+                  </div>
+                  {errors.confirmarSenha && (
+                    <p className="mt-1.5 text-sm text-red-500 flex items-center gap-1"><AlertCircle className="h-4 w-4 shrink-0" /> {errors.confirmarSenha.message}</p>
+                  )}
+                </motion.div>
+                <motion.div variants={item}>
+                  <motion.button
+                    type="submit"
+                    disabled={loading}
+                    className="auth-btn-mobile md:btn-primary w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-base font-semibold text-white"
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {loading ? 'Cadastrando...' : 'Cadastrar'}
+                    <ArrowRight className="h-5 w-5" />
+                  </motion.button>
+                </motion.div>
+              </form>
+
+              <motion.p variants={item} className="mt-6 md:mt-8 text-center text-sm text-gray-500">
+                Já tem conta?{' '}
+                <Link href="/auth/login" className="font-semibold text-olive hover:underline focus:outline-none focus:ring-2 focus:ring-olive/30 rounded">
+                  Entrar
+                </Link>
+              </motion.p>
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
     </div>
   )

@@ -148,15 +148,20 @@ export default function Dashboard() {
         />
       </section>
 
-      {/* Mobile: saudação – logo abaixo do carrossel para não ficar muito abaixo */}
+      {/* Mobile: saudação – foto do perfil (ou iniciais), texto alinhado */}
       <header className="flex lg:hidden items-center justify-between mb-6 px-4">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-olive/15 dark:bg-accent-purple/25 flex items-center justify-center text-olive dark:text-accent-purpleLight font-bold text-lg shrink-0">
-            {user?.nome?.split(' ').map((n) => n[0]).join('').slice(0, 2) ?? 'P'}
+        <div className="flex items-center gap-3 min-h-[44px]">
+          <div className="w-11 h-11 rounded-2xl overflow-hidden bg-olive/15 dark:bg-accent-purple/25 flex items-center justify-center text-olive dark:text-accent-purpleLight font-bold text-base shrink-0">
+            {user?.avatar ? (
+              <img src={user.avatar} alt="" className="w-full h-full object-cover" />
+            ) : (
+              (user?.nome?.split(' ').map((n) => n[0]).join('').slice(0, 2) ?? 'P').toUpperCase()
+            )}
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-gray-800 dark:text-night-text">Bem-vindo, {firstName}</h1>
-            <p className="text-sm text-gray-500 dark:text-night-muted">Sua saúde bucal em um só lugar</p>
+          <div className="flex flex-col justify-center gap-0.5">
+            <h1 className="text-base font-bold text-gray-800 dark:text-night-text leading-tight">Bem-vindo,</h1>
+            <h1 className="text-lg font-bold text-gray-800 dark:text-night-text leading-tight -mt-0.5">{firstName}</h1>
+            <p className="text-xs text-gray-500 dark:text-night-muted leading-tight">Sua saúde bucal em um só lugar</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

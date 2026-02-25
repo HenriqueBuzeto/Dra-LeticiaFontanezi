@@ -56,6 +56,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data: { session } } = await supabase.auth.getSession()
         if (session?.user) {
           const appUser = mapSupabaseUserToAppUser(session.user)
+          const stored = localStorage.getItem(STORAGE_KEYS.user)
+          if (stored) {
+            try {
+              const parsed = JSON.parse(stored) as User
+              if (parsed.avatar) (appUser as User).avatar = parsed.avatar
+            } catch (_) { /* ignore */ }
+          }
           setUser(appUser)
           localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(appUser))
         } else {
@@ -118,6 +125,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         const appUser = mapSupabaseUserToAppUser(session.user)
+        const stored = localStorage.getItem(STORAGE_KEYS.user)
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored) as User
+            if (parsed.avatar) (appUser as User).avatar = parsed.avatar
+          } catch (_) { /* ignore */ }
+        }
         setUser(appUser)
         localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(appUser))
       } else {

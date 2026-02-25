@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "create-admin": "node scripts/create-admin-user.mjs",
     "check:secrets": "node scripts/check-secrets.mjs",
     "download:mediapipe": "node scripts/download-mediapipe.mjs",
     "download:face-api-models": "node scripts/download-face-api-models.mjs",
