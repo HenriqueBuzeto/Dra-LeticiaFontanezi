@@ -143,7 +143,7 @@ export const DEMO_VIDEOS = [
   },
 ]
 
-const env = typeof process !== 'undefined' ? process.env : {}
+const env: Record<string, string | undefined> = typeof process !== 'undefined' ? process.env : {}
 
 export const DOCTOR_PROFILE = {
   nome: 'Dra. Letícia Fontanezi',
