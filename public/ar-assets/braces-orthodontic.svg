@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 2400 800" width="2400" height="800"
+     style="background:transparent;">
+  <defs>
+    <!-- Metal bracket: a�o inox sutil -->
+    <linearGradient id="metal-bracket" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E0E0E0"/>
+      <stop offset="35%" style="stop-color:#C9C9C9"/>
+      <stop offset="65%" style="stop-color:#B8B8B8"/>
+      <stop offset="100%" style="stop-color:#A8A8A8"/>
+    </linearGradient>
+    <!-- Reflexo central suave no bracket -->
+    <linearGradient id="metal-bracket-shine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D8D8D8;stop-opacity:0.6"/>
+      <stop offset="50%" style="stop-color:#C9C9C9;stop-opacity:0"/>
+      <stop offset="100%" style="stop-color:#B0B0B0;stop-opacity:0.3"/>
+    </linearGradient>
+    <!-- Fio ortod�ntico -->
+    <linearGradient id="wire-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#C0C0C0"/>
+      <stop offset="50%" style="stop-color:#B5B5B5"/>
+      <stop offset="100%" style="stop-color:#A0A0A0"/>
+    </linearGradient>
+    <!-- Borrachinha: volume interno suave (cor padr�o #FF0000, troc�vel via c�digo) -->
+    <radialGradient id="elastic-volume" cx="35%" cy="35%" r="70%">
+      <stop offset="0%" style="stop-color:#fff;stop-opacity:0.25"/>
+      <stop offset="70%" style="stop-color:#000;stop-opacity:0.08"/>
+      <stop offset="100%" style="stop-color:#000;stop-opacity:0.15"/>
+    </radialGradient>
+  </defs>
+
+  <g id="Aparelho">
+    <!-- ARCADA SUPERIOR -->
+    <g id="Upper">
+      <path id="Wire-Upper" fill="none" stroke="url(#wire-gradient)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"
+            d="M 702 302 Q 900 218 1200 214 Q 1500 218 1698 302"/>
+      <!-- 14 brackets superior: leve varia��o natural nas posi��es -->
+      <g id="Bracket-1" transform="translate(705, 298) rotate(-88)">
+        <path id="Metal-Base-1" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-1" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-2" transform="translate(778, 278) rotate(-82)">
+        <path id="Metal-Base-2" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-2" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-3" transform="translate(852, 255) rotate(-74)">
+        <path id="Metal-Base-3" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-3" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-4" transform="translate(928, 232) rotate(-64)">
+        <path id="Metal-Base-4" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-4" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-5" transform="translate(1005, 218) rotate(-52)">
+        <path id="Metal-Base-5" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-5" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-6" transform="translate(1082, 212) rotate(-38)">
+        <path id="Metal-Base-6" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-6" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-7" transform="translate(1160, 213) rotate(-22)">
+        <path id="Metal-Base-7" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-7" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-8" transform="translate(1240, 213) rotate(22)">
+        <path id="Metal-Base-8" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-8" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-9" transform="translate(1318, 212) rotate(38)">
+        <path id="Metal-Base-9" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-9" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-10" transform="translate(1395, 218) rotate(52)">
+        <path id="Metal-Base-10" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-10" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-11" transform="translate(1472, 232) rotate(64)">
+        <path id="Metal-Base-11" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-11" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-12" transform="translate(1548, 255) rotate(74)">
+        <path id="Metal-Base-12" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-12" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-13" transform="translate(1622, 278) rotate(82)">
+        <path id="Metal-Base-13" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-13" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-14" transform="translate(1695, 298) rotate(88)">
+        <path id="Metal-Base-14" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-14" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+    </g>
+
+    <!-- ARCADA INFERIOR (leve varia��o natural, arcada menor) -->
+    <g id="Lower">
+      <path id="Wire-Lower" fill="none" stroke="url(#wire-gradient)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"
+            d="M 718 502 Q 910 578 1200 582 Q 1490 578 1682 502"/>
+      <g id="Bracket-15" transform="translate(722, 498) rotate(92)">
+        <path id="Metal-Base-15" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-15" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-16" transform="translate(795, 518) rotate(98)">
+        <path id="Metal-Base-16" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-16" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-17" transform="translate(868, 538) rotate(106)">
+        <path id="Metal-Base-17" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-17" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-18" transform="translate(943, 556) rotate(116)">
+        <path id="Metal-Base-18" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-18" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-19" transform="translate(1018, 570) rotate(128)">
+        <path id="Metal-Base-19" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-19" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-20" transform="translate(1094, 578) rotate(142)">
+        <path id="Metal-Base-20" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-20" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-21" transform="translate(1170, 580) rotate(158)">
+        <path id="Metal-Base-21" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-21" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-22" transform="translate(1246, 580) rotate(-158)">
+        <path id="Metal-Base-22" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-22" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-23" transform="translate(1322, 578) rotate(-142)">
+        <path id="Metal-Base-23" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-23" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-24" transform="translate(1398, 570) rotate(-128)">
+        <path id="Metal-Base-24" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-24" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-25" transform="translate(1473, 556) rotate(-116)">
+        <path id="Metal-Base-25" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-25" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-26" transform="translate(1548, 538) rotate(-106)">
+        <path id="Metal-Base-26" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-26" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-27" transform="translate(1621, 518) rotate(-98)">
+        <path id="Metal-Base-27" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-27" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+      <g id="Bracket-28" transform="translate(1694, 498) rotate(-92)">
+        <path id="Metal-Base-28" fill="url(#metal-bracket)" stroke="#A0A0A0" stroke-width="0.6"
+              d="M -12 -6 L 12 -6 Q 13 -6 13 -5 L 13 5 Q 13 6 12 6 L -12 6 Q -13 6 -13 5 L -13 -5 Q -13 -6 -12 -6 Z"/>
+        <ellipse id="Elastic-28" cx="0" cy="0" rx="14" ry="8.5" fill="#FF0000" opacity="0.95"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  nome           String
+  email          String    @unique
+  telefone       String?
+  dataNascimento DateTime? @map("data_nascimento")
+  senhaHash      String    @map("senha_hash")
+  role           Role      @default(paciente)
+  avatar         String?
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  appointments   Appointment[]
+  reminders      Reminder[]
+  arSessions     ARSession[]
+  pointLogs      PointLog[]
+}
+
+enum Role {
+  admin
+  paciente
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  userId      String            @map("user_id")
+  data        String
+  horario     String
+  status      AppointmentStatus @default(pendente)
+  tipo        String?           @default("Consulta")
+  observacoes String?
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum AppointmentStatus {
+  confirmado
+  pendente
+  cancelado
+}
+
+model Reminder {
+  id        String         @id @default(cuid())
+  userId    String         @map("user_id")
+  tipo      ReminderTipo
+  dataEnvio DateTime       @map("data_envio")
+  status    ReminderStatus @default(pendente)
+  titulo    String?
+  mensagem  String?
+  createdAt DateTime       @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum ReminderTipo {
+  push
+  email
+  whatsapp
+}
+
+enum ReminderStatus {
+  enviado
+  pendente
+  falhou
+}
+
+model Video {
+  id         String       @id @default(cuid())
+  titulo     String
+  descricao  String?
+  url        String
+  thumbnail  String?
+  categoria  VideoCategoria
+  duracao    Int?         // minutos
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+}
+
+enum VideoCategoria {
+  higiene
+  primeira_consulta
+  cuidados_aparelho
+  outros
+}
+
+model ARSession {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  corElastico String? @map("cor_elastico")
+  imagemUrl   String? @map("imagem_url")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Gamificação: ações que geram pontos
+model PointLog {
+  id        String      @id @default(cuid())
+  userId    String      @map("user_id")
+  action    PointAction
+  points    Int
+  metadata  String?     // ex: data da consulta, observação
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum PointAction {
+  escovacao
+  fio_dental
+  consulta_presente
+  limpeza_bucal
+  uso_enxaguante
+  checkin_semanal
+}

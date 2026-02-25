@@ -1,0 +1,8 @@
+{
+  "/(main)/profile/page": "app/(main)/profile/page.js",
+  "/(main)/dashboard/page": "app/(main)/dashboard/page.js",
+  "/(main)/doctor/page": "app/(main)/doctor/page.js",
+  "/(main)/appointments/page": "app/(main)/appointments/page.js",
+  "/(main)/reminders/page": "app/(main)/reminders/page.js",
+  "/(main)/videos/page": "app/(main)/videos/page.js"
+}

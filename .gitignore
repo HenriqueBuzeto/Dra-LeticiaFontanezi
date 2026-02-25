@@ -1,0 +1,35 @@
+# Dependências
+node_modules/
+
+# Ambiente – NUNCA commitar (chaves, senhas, tokens)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+backend/.env
+*.env
+!.env.example
+!backend/.env.example
+
+# Build
+dist/
+build/
+*.tsbuildinfo
+
+# Logs e cache
+*.log
+.cache/
+
+# Uploads (mantém pastas, ignora arquivos enviados)
+backend/uploads/videos/*
+backend/uploads/thumbnails/*
+!backend/uploads/videos/.gitkeep
+!backend/uploads/thumbnails/.gitkeep
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

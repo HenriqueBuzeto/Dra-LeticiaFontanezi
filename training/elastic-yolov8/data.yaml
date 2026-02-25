@@ -1,0 +1,9 @@
+# YOLOv8-seg dataset config
+# Ajuste path para o diretório absoluto do dataset (ou use caminho relativo ao script)
+
+path: dataset
+train: images/train
+val: images/val
+
+nc: 1
+names: ['elastic']

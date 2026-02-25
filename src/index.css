@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+    min-height: 100%;
+  }
+  body {
+    @apply text-gray-800 font-sans min-h-screen;
+    min-height: 100%;
+    background-color: #FEFBF6;
+  }
+  .dark body {
+    @apply text-gray-100;
+    background-color: #1A1B14;
+  }
+  #root {
+    min-height: 100vh;
+    display: block;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 rounded-2xl bg-olive text-offwhite font-medium shadow-button
+           hover:opacity-95 active:scale-[0.98] transition-all duration-200;
+  }
+  .btn-secondary {
+    @apply px-6 py-3 rounded-2xl bg-gray-mist text-olive font-medium
+           hover:bg-gray-mistDark transition-colors duration-200;
+  }
+  .card-glass {
+    @apply rounded-2xl bg-white/80 dark:bg-night-card backdrop-blur-md shadow-soft dark:shadow-none border border-white/20 dark:border-night-border;
+  }
+  .input-field {
+    @apply w-full px-4 py-3 rounded-2xl border-2 border-gray-mist dark:border-gray-600 outline-none transition-all duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100;
+    background-color: white;
+  }
+  .input-field:focus {
+    border-color: #83a781;
+    box-shadow: 0 0 0 2px rgba(131, 167, 129, 0.2);
+  }
+  .dark .input-field {
+    background-color: #22231C;
+  }
+  .dark .input-field:focus {
+    border-color: #8fa98d;
+    box-shadow: 0 0 0 2px rgba(131, 167, 129, 0.25);
+  }
+}
+
+/* Safe area para mobile */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+  }
+}
+
+/* Scrollbar moderna (bonita) para rolagem vertical e horizontal */
+.scrollbar-modern,
+.scrollbar-modern * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(131, 167, 129, 0.45) transparent;
+}
+.scrollbar-modern::-webkit-scrollbar,
+.scrollbar-modern *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-modern::-webkit-scrollbar-track,
+.scrollbar-modern *::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+.scrollbar-modern::-webkit-scrollbar-thumb,
+.scrollbar-modern *::-webkit-scrollbar-thumb {
+  background: rgba(131, 167, 129, 0.35);
+  border-radius: 4px;
+}
+.scrollbar-modern::-webkit-scrollbar-thumb:hover,
+.scrollbar-modern *::-webkit-scrollbar-thumb:hover {
+  background: rgba(131, 167, 129, 0.55);
+}
+.dark .scrollbar-modern::-webkit-scrollbar-thumb,
+.dark .scrollbar-modern *::-webkit-scrollbar-thumb {
+  background: rgba(143, 169, 141, 0.45);
+}
+.dark .scrollbar-modern,
+.dark .scrollbar-modern * {
+  scrollbar-color: rgba(143, 169, 141, 0.5) transparent;
+}
+.dark .scrollbar-modern::-webkit-scrollbar-thumb:hover,
+.dark .scrollbar-modern *::-webkit-scrollbar-thumb:hover {
+  background: rgba(143, 169, 141, 0.65);
+}
+
+/* Aplicar scrollbar bonita na área principal de rolagem */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(131, 167, 129, 0.45) transparent;
+}
+html::-webkit-scrollbar {
+  width: 10px;
+}
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+html::-webkit-scrollbar-thumb {
+  background: rgba(131, 167, 129, 0.35);
+  border-radius: 5px;
+}
+html::-webkit-scrollbar-thumb:hover {
+  background: rgba(131, 167, 129, 0.55);
+}
+.dark html::-webkit-scrollbar-thumb {
+  background: rgba(143, 169, 141, 0.45);
+}
+.dark html::-webkit-scrollbar-thumb:hover {
+  background: rgba(143, 169, 141, 0.65);
+}
+
+/* Esconder scrollbar em carrosséis */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Header desktop: botões modernos com efeitos de qualidade */
+.header-nav-pill {
+  @apply relative px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300;
+}
+.header-nav-pill:hover {
+  @apply text-olive dark:text-accent-purpleLight;
+  background-color: rgba(131, 167, 129, 0.08);
+  box-shadow: 0 2px 12px rgba(131, 167, 129, 0.12);
+}
+.dark .header-nav-pill:hover {
+  background-color: rgba(143, 169, 141, 0.15);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
+}
+.header-nav-pill:focus-visible {
+  @apply outline-none ring-2 ring-olive/40 dark:ring-accent-purpleLight/50 ring-offset-2 ring-offset-white dark:ring-offset-night-surface;
+}
+.header-nav-pill-active {
+  background: linear-gradient(135deg, rgba(131, 167, 129, 0.12) 0%, rgba(131, 167, 129, 0.06) 100%);
+  color: #83a781;
+  box-shadow: 0 2px 12px rgba(131, 167, 129, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.dark .header-nav-pill-active {
+  background: linear-gradient(135deg, rgba(143, 169, 141, 0.2) 0%, rgba(143, 169, 141, 0.08) 100%);
+  color: #a8c4a6;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Botão ícone (tema) */
+.header-btn-icon {
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+.header-btn-icon:hover {
+  background-color: rgba(131, 167, 129, 0.08);
+  box-shadow: 0 2px 12px rgba(131, 167, 129, 0.1);
+}
+.dark .header-btn-icon:hover {
+  background-color: rgba(143, 169, 141, 0.15);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+.header-btn-icon:focus-visible {
+  @apply outline-none ring-2 ring-olive/40 dark:ring-accent-purpleLight/50 ring-offset-2 ring-offset-white dark:ring-offset-night-surface;
+}
+
+/* CTA Agendar: gradiente, sombra e brilho */
+.header-btn-cta {
+  background: linear-gradient(135deg, #83a781 0%, #9bb999 50%, #83a781 100%);
+  background-size: 200% 100%;
+  box-shadow: 0 4px 14px rgba(131, 167, 129, 0.35), 0 1px 0 rgba(255, 255, 255, 0.1) inset;
+  transition: transform 0.2s ease, box-shadow 0.25s ease, background-position 0.4s ease;
+}
+.header-btn-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(131, 167, 129, 0.4), 0 2px 0 rgba(255, 255, 255, 0.15) inset;
+  background-position: 100% 0;
+}
+.header-btn-cta:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(131, 167, 129, 0.3);
+}
+.dark .header-btn-cta {
+  background: linear-gradient(135deg, #9bb999 0%, #a8c4a6 50%, #9bb999 100%);
+  background-size: 200% 100%;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+}
+.dark .header-btn-cta:hover {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), 0 2px 0 rgba(255, 255, 255, 0.1) inset;
+}
+.header-btn-cta:focus-visible {
+  @apply outline-none ring-2 ring-olive ring-offset-2 ring-offset-white dark:ring-offset-night-surface;
+}

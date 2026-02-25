@@ -1,0 +1,15 @@
+data/obj_train_data/borrachinha1.png
+data/obj_train_data/borrachinha10.png
+data/obj_train_data/borrachinha11.png
+data/obj_train_data/borrachinha12.png
+data/obj_train_data/borrachinha13.png
+data/obj_train_data/borrachinha14.png
+data/obj_train_data/borrachinha15.png
+data/obj_train_data/borrachinha2.png
+data/obj_train_data/borrachinha3.png
+data/obj_train_data/borrachinha4.png
+data/obj_train_data/borrachinha5.png
+data/obj_train_data/borrachinha6.png
+data/obj_train_data/borrachinha7.png
+data/obj_train_data/borrachinha8.png
+data/obj_train_data/borrachinha9.png

@@ -1,0 +1,46 @@
+{
+  "appointments": [
+    {
+      "id": "1",
+      "userId": "demo",
+      "data": "2025-02-15",
+      "horario": "10:00 - 11:30",
+      "status": "confirmado",
+      "tipo": "Limpeza de rotina"
+    }
+  ],
+  "videos": [
+    {
+      "id": "1",
+      "titulo": "A forma correta de escovar os dentes",
+      "duracao": 3,
+      "categoria": "Higiene",
+      "thumbnail": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&q=80",
+      "url": "#"
+    },
+    {
+      "id": "2",
+      "titulo": "Top 5 dicas de uso do fio dental",
+      "duracao": 5,
+      "categoria": "Prevenção",
+      "thumbnail": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=400&q=80",
+      "url": "#"
+    },
+    {
+      "id": "3",
+      "titulo": "Como limpar seu aparelho",
+      "duracao": 4,
+      "categoria": "Guia de higiene",
+      "thumbnail": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=400&q=80",
+      "url": "#"
+    },
+    {
+      "id": "4",
+      "titulo": "O que esperar na primeira consulta",
+      "duracao": 6,
+      "categoria": "Primeira visita",
+      "thumbnail": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400&q=80",
+      "url": "#"
+    }
+  ]
+}
