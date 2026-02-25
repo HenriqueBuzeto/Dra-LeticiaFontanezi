@@ -1,5 +1,7 @@
 import { AdminLayoutWrapper } from '@/components/admin/AdminLayoutWrapper'
 
+export const dynamic = 'force-dynamic'
+
 export default function AdminLayout({
   children,
 }: {
