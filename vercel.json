@@ -6,8 +6,9 @@
       "framework": "nextjs"
     },
     "backend": {
-      "entrypoint": "backend",
-      "routePrefix": "/api"
+      "entrypoint": "backend/package.json",
+      "routePrefix": "/api",
+      "framework": "express"
     }
   }
 }
