@@ -1,7 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
+import { and, eq, isNull, gt } from 'drizzle-orm'
+import { randomUUID, createHash, randomBytes } from 'crypto'
 import { UsersService } from '../users/users.service'
+import { DatabaseService } from '../database/database.service'
+import { passwordReset as passwordResetTable, user as userTable } from '../database/schema'
 import { LoginDto } from './dto/login.dto'
 import { RegisterDto } from './dto/register.dto'
 
@@ -10,6 +14,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private db: DatabaseService,
   ) {}
 
   async login(dto: LoginDto) {
@@ -17,6 +22,7 @@ export class AuthService {
     if (emailNorm === 'teste@odontologico.com' && dto.password === '123456') {
       await this.usersService.ensureTestAdmin()
     }
+
     const user = await this.usersService.findByEmail(dto.email)
     if (!user) throw new UnauthorizedException('E-mail ou senha inválidos')
     const ok = await bcrypt.compare(dto.password, user.senhaHash)
@@ -50,6 +56,56 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException('Refresh token inválido')
     }
+  }
+
+  /**
+   * Fluxo de "esqueci minha senha" (sem Supabase).
+   * Segurança: sempre retorna ok (não revela se o e-mail existe).
+   * Observação: o envio de e-mail não está implementado aqui.
+   * Para desenvolvimento, o token é retornado no response apenas quando NODE_ENV !== 'production'.
+   */
+  async requestPasswordReset(email: string) {
+    const emailNorm = email.trim().toLowerCase()
+    const u = await this.usersService.findByEmail(emailNorm)
+
+    if (!u) return { ok: true }
+
+    const rawToken = randomBytes(32).toString('hex')
+    const tokenHash = createHash('sha256').update(rawToken).digest('hex')
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60) // 1h
+
+    await this.db.db.insert(passwordResetTable).values({
+      id: randomUUID(),
+      userId: u.id,
+      tokenHash,
+      expiresAt,
+      usedAt: null,
+    })
+
+    if (process.env.NODE_ENV !== 'production') {
+      return { ok: true, token: rawToken }
+    }
+    return { ok: true }
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    if (!token || token.trim().length < 10) throw new BadRequestException('Token inválido')
+
+    const tokenHash = createHash('sha256').update(token).digest('hex')
+    const now = new Date()
+    const rows = await this.db.db
+      .select()
+      .from(passwordResetTable)
+      .where(and(eq(passwordResetTable.tokenHash, tokenHash), isNull(passwordResetTable.usedAt), gt(passwordResetTable.expiresAt, now)))
+      .limit(1)
+    const pr = rows[0]
+    if (!pr) throw new BadRequestException('Token inválido ou expirado')
+
+    const senhaHash = await bcrypt.hash(newPassword, 10)
+    await this.db.db.update(userTable).set({ senhaHash }).where(eq(userTable.id, pr.userId))
+    await this.db.db.update(passwordResetTable).set({ usedAt: now }).where(eq(passwordResetTable.id, pr.id))
+
+    return { ok: true }
   }
 
   private toUserResponse(u: {

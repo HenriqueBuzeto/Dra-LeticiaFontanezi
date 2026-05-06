@@ -50,6 +50,148 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     return { ok: true, tables }
   }
 
+  /**
+   * Auditoria detalhada do schema public (tabelas/colunas/constraints/índices/contagens).
+   * Deve ser exposto apenas em endpoint protegido (admin-only).
+   */
+  async getDbReport() {
+    if (!this.pool) throw new Error('Database pool não inicializado')
+
+    const expectedTables = [
+      'user',
+      'appointment',
+      'reminder',
+      'video',
+      'ar_session',
+      'point_log',
+      'reward_item',
+      'password_reset',
+    ] as const
+
+    const existingTablesRes = await this.pool.query(
+      `SELECT tablename
+       FROM pg_tables
+       WHERE schemaname = 'public'
+       ORDER BY tablename`
+    )
+    const existingTables = existingTablesRes.rows.map((r: { tablename: string }) => r.tablename)
+
+    const missingTables = expectedTables.filter((t) => !existingTables.includes(t))
+    const unexpectedTables = existingTables.filter((t) => !expectedTables.includes(t as (typeof expectedTables)[number]))
+
+    const expectedByTable: Record<string, string[]> = {
+      user: ['id', 'nome', 'email', 'telefone', 'telefone_alternativo', 'data_nascimento', 'genero', 'senha_hash', 'role', 'avatar', 'endereco', 'contato_emergencia', 'preferencia_lembrete', 'created_at', 'updated_at'],
+      appointment: ['id', 'user_id', 'data', 'horario', 'status', 'tipo', 'observacoes', 'checkin_status', 'checkin_at', 'created_at', 'updated_at'],
+      reminder: ['id', 'user_id', 'tipo', 'data_envio', 'status', 'titulo', 'mensagem', 'created_at'],
+      video: ['id', 'titulo', 'descricao', 'url', 'thumbnail', 'categoria', 'duracao', 'created_at', 'updated_at'],
+      ar_session: ['id', 'user_id', 'cor_elastico', 'imagem_url', 'created_at'],
+      point_log: ['id', 'user_id', 'action', 'points', 'metadata', 'created_at'],
+      reward_item: ['id', 'name', 'points_required', 'type', 'description'],
+      password_reset: ['id', 'user_id', 'token_hash', 'expires_at', 'used_at', 'created_at'],
+    }
+
+    const tableReports: Record<
+      string,
+      {
+        exists: boolean
+        rowCount?: number
+        columns?: { name: string; type: string; nullable: boolean; default: string | null }[]
+        missingColumns?: string[]
+        constraints?: { name: string; type: string; definition: string | null }[]
+        indexes?: { name: string; definition: string }[]
+      }
+    > = {}
+
+    const safeIdentifier = (name: string) => {
+      if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) throw new Error(`Identificador inválido: ${name}`)
+      return `"${name}"`
+    }
+
+    for (const table of expectedTables) {
+      const exists = existingTables.includes(table)
+      if (!exists) {
+        tableReports[table] = { exists: false, missingColumns: expectedByTable[table].slice() }
+        continue
+      }
+
+      const columnsRes = await this.pool.query(
+        `SELECT column_name, data_type, is_nullable, column_default
+         FROM information_schema.columns
+         WHERE table_schema='public' AND table_name=$1
+         ORDER BY ordinal_position`,
+        [table]
+      )
+      const columns = columnsRes.rows.map((r: any) => ({
+        name: r.column_name as string,
+        type: r.data_type as string,
+        nullable: (r.is_nullable as string) === 'YES',
+        default: (r.column_default as string | null) ?? null,
+      }))
+      const existingColNames = new Set(columns.map((c) => c.name))
+      const missingColumns = (expectedByTable[table] ?? []).filter((c) => !existingColNames.has(c))
+
+      const countRes = await this.pool.query(`SELECT COUNT(*)::int AS c FROM ${safeIdentifier(table)}`)
+      const rowCount = (countRes.rows[0] as { c: number })?.c ?? 0
+
+      const constraintsRes = await this.pool.query(
+        `SELECT c.conname AS name,
+                CASE c.contype
+                  WHEN 'p' THEN 'PRIMARY KEY'
+                  WHEN 'u' THEN 'UNIQUE'
+                  WHEN 'f' THEN 'FOREIGN KEY'
+                  WHEN 'c' THEN 'CHECK'
+                  ELSE c.contype::text
+                END AS type,
+                pg_get_constraintdef(c.oid) AS definition
+         FROM pg_constraint c
+         JOIN pg_class t ON t.oid = c.conrelid
+         JOIN pg_namespace n ON n.oid = t.relnamespace
+         WHERE n.nspname='public' AND t.relname=$1
+         ORDER BY c.conname`,
+        [table]
+      )
+      const constraints = constraintsRes.rows.map((r: any) => ({
+        name: r.name as string,
+        type: r.type as string,
+        definition: (r.definition as string | null) ?? null,
+      }))
+
+      const indexesRes = await this.pool.query(
+        `SELECT indexname AS name, indexdef AS definition
+         FROM pg_indexes
+         WHERE schemaname='public' AND tablename=$1
+         ORDER BY indexname`,
+        [table]
+      )
+      const indexes = indexesRes.rows.map((r: any) => ({
+        name: r.name as string,
+        definition: r.definition as string,
+      }))
+
+      tableReports[table] = {
+        exists: true,
+        rowCount,
+        columns,
+        missingColumns,
+        constraints,
+        indexes,
+      }
+    }
+
+    return {
+      ok: missingTables.length === 0,
+      schema: 'public',
+      expectedTables,
+      existingTables,
+      missingTables,
+      unexpectedTables,
+      tables: tableReports,
+      alerts: {
+        healthEndpointDoesNotList: ['reward_item', 'password_reset'],
+      },
+    }
+  }
+
   private async runMigrations() {
     const client = this.pool!
     await client.query(`
@@ -139,10 +281,23 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       type TEXT NOT NULL,
       description TEXT NOT NULL
     )`)
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS password_reset (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+        token_hash TEXT NOT NULL,
+        expires_at TIMESTAMPTZ NOT NULL,
+        used_at TIMESTAMPTZ,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_appointment_user ON appointment(user_id)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_reminder_user ON reminder(user_id)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_ar_session_user ON ar_session(user_id)`)
     await client.query(`CREATE INDEX IF NOT EXISTS idx_point_log_user ON point_log(user_id)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_password_reset_user ON password_reset(user_id)`)
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_password_reset_token_hash ON password_reset(token_hash)`)
 
     await this.runTriggers(client)
     await this.seedVideos(client)

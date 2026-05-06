@@ -1,25 +1,20 @@
 #!/usr/bin/env node
 /**
- * Cria um usuário admin no Supabase (Auth) com role 'admin' no user_metadata.
- * Use apenas localmente; nunca exponha SUPABASE_SERVICE_ROLE_KEY no frontend ou no repositório.
+ * Cria/atualiza um usuário admin diretamente no PostgreSQL (Neon) na tabela "user".
  *
  * Uso:
  *   node scripts/create-admin-user.mjs
  *
- * Variáveis de ambiente (em .env.local ou export no terminal):
- *   NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto.supabase.co
- *   SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key
- *
- * O usuário criado terá:
- *   email: draleticiafontanezi@admin.com
- *   senha: Adminmaya
- *   user_metadata.role: 'admin' (acesso total no app)
+ * Variáveis de ambiente (em backend/.env ou export no terminal):
+ *   DATABASE_URL=postgresql://...
  */
 
-import { createClient } from '@supabase/supabase-js'
 import { readFileSync, existsSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
+import pg from 'pg'
+import bcrypt from 'bcrypt'
+import { randomUUID } from 'crypto'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..')
@@ -46,49 +41,47 @@ function loadEnvLocal() {
 
 loadEnvLocal()
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const databaseUrl = process.env.DATABASE_URL
 
 const ADMIN_EMAIL = 'draleticiafontanezi@admin.com'
 const ADMIN_PASSWORD = 'Adminmaya'
 
-if (!supabaseUrl || !serviceRoleKey) {
-  console.error('❌ Defina NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY em .env.local')
-  console.error('   A Service Role Key está em: Supabase Dashboard → Project Settings → API → service_role')
+if (!databaseUrl) {
+  console.error('❌ Defina DATABASE_URL (Neon) em backend/.env ou no ambiente')
   process.exit(1)
 }
 
-const supabase = createClient(supabaseUrl, serviceRoleKey, {
-  auth: { autoRefreshToken: false, persistSession: false },
-})
+const { Pool } = pg
+const pool = new Pool({ connectionString: databaseUrl, max: 1 })
 
 async function main() {
-  console.log('Criando usuário admin no Supabase...')
-  const { data, error } = await supabase.auth.admin.createUser({
-    email: ADMIN_EMAIL,
-    password: ADMIN_PASSWORD,
-    email_confirm: true,
-    user_metadata: {
-      role: 'admin',
-      full_name: 'Dra. Letícia Fontanezi (Admin)',
-      nome: 'Dra. Letícia Fontanezi (Admin)',
-    },
-  })
+  console.log('Criando/atualizando usuário admin no PostgreSQL (Neon)...')
+  const client = await pool.connect()
+  try {
+    const senhaHash = await bcrypt.hash(ADMIN_PASSWORD, 10)
 
-  if (error) {
-    if (error.message && error.message.includes('already been registered')) {
-      console.log('⚠️ Este e-mail já está cadastrado. Para virar admin, atualize o user_metadata no Dashboard:')
-      console.log('   Authentication → Users → selecione o usuário → Edit → Raw User Meta Data: { "role": "admin" }')
-    } else {
-      console.error('❌ Erro:', error.message)
-    }
-    process.exit(1)
+    const existing = await client.query('SELECT id FROM "user" WHERE email = $1 LIMIT 1', [ADMIN_EMAIL])
+    const id = existing.rows[0]?.id || randomUUID()
+
+    await client.query(
+      `INSERT INTO "user" (id, nome, email, senha_hash, role, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, 'admin', NOW(), NOW())
+       ON CONFLICT (email) DO UPDATE
+       SET nome = EXCLUDED.nome,
+           senha_hash = EXCLUDED.senha_hash,
+           role = 'admin',
+           updated_at = NOW()`,
+      [id, 'Dra. Letícia Fontanezi (Admin)', ADMIN_EMAIL, senhaHash]
+    )
+
+    console.log('✅ Usuário admin criado/atualizado com sucesso.')
+    console.log('   E-mail:', ADMIN_EMAIL)
+    console.log('   Senha:  (a que você definiu no script)')
+    console.log('   Faça login em /auth/login para acessar o painel admin.')
+  } finally {
+    client.release()
+    await pool.end()
   }
-
-  console.log('✅ Usuário admin criado com sucesso.')
-  console.log('   E-mail:', ADMIN_EMAIL)
-  console.log('   Senha:  (a que você definiu no script)')
-  console.log('   Faça login em /auth/login para acessar o painel admin.')
 }
 
 main()

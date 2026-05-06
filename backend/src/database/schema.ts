@@ -87,6 +87,16 @@ export const rewardItem = pgTable('reward_item', {
   description: text('description').notNull(),
 })
 
+/** Reset de senha: tokens de curta duração (sem depender de Supabase) */
+export const passwordReset = pgTable('password_reset', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  tokenHash: text('token_hash').notNull(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  usedAt: timestamp('used_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
 export type UserRow = typeof user.$inferSelect
 export type AppointmentRow = typeof appointment.$inferSelect
 export type ReminderRow = typeof reminder.$inferSelect
@@ -94,3 +104,4 @@ export type VideoRow = typeof video.$inferSelect
 export type ARSessionRow = typeof arSession.$inferSelect
 export type PointLogRow = typeof pointLog.$inferSelect
 export type RewardItemRow = typeof rewardItem.$inferSelect
+export type PasswordResetRow = typeof passwordReset.$inferSelect

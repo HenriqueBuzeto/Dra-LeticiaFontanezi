@@ -9,7 +9,7 @@ import { z } from 'zod'
 import { Lock, ArrowRight, AlertCircle } from 'lucide-react'
 import { useToast } from '@/components/ui/Toaster'
 import { getApiErrorMessage } from '@/lib/apiError'
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { api } from '@/lib/api'
 
 const schema = z.object({
   senha: z.string().min(6, 'Mínimo 6 caracteres'),
@@ -23,6 +23,7 @@ export default function ResetPassword() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [ready, setReady] = useState(false)
+  const [token, setToken] = useState<string | null>(null)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -30,24 +31,22 @@ export default function ResetPassword() {
   })
 
   useEffect(() => {
-    if (!isSupabaseConfigured() || !supabase) {
+    const url = typeof window !== 'undefined' ? new URL(window.location.href) : null
+    const t = url?.searchParams.get('token')
+    if (!t) {
       router.replace('/auth/login')
       return
     }
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) router.replace('/auth/login')
-      else setReady(true)
-    })
+    setToken(t)
+    setReady(true)
   }, [router])
 
   const onSubmit = async (data: FormData) => {
-    if (!supabase) return
+    if (!token) return
     setLoading(true)
     try {
-      const { error } = await supabase.auth.updateUser({ password: data.senha })
-      if (error) throw error
+      await api.post('/auth/reset-password', { token, newPassword: data.senha })
       toast('Senha alterada com sucesso. Faça login.', 'success')
-      await supabase.auth.signOut()
       router.replace('/auth/login')
     } catch (err: unknown) {
       toast(getApiErrorMessage(err, 'Erro ao alterar senha.'), 'error')

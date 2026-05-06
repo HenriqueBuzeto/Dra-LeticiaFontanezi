@@ -11,7 +11,7 @@ import { loadSlim } from '@tsparticles/slim'
 import { Mail, ArrowLeft, AlertCircle, CheckCircle } from 'lucide-react'
 import { useToast } from '@/components/ui/Toaster'
 import { getApiErrorMessage } from '@/lib/apiError'
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { api } from '@/lib/api'
 
 const schema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -39,18 +39,10 @@ export default function ForgotPassword() {
   }, [])
 
   const onSubmit = async (data: FormData) => {
-    if (!isSupabaseConfigured() || !supabase) {
-      toast('Redefinição de senha não disponível. Entre em contato com a clínica pelo WhatsApp.', 'error')
-      return
-    }
     setLoading(true)
     setSent(false)
     try {
-      const origin = typeof window !== 'undefined' ? window.location.origin : ''
-      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: `${origin}/auth/reset-password`,
-      })
-      if (error) throw error
+      await api.post('/auth/forgot-password', { email: data.email })
       setSent(true)
       toast('Se o e-mail existir, você receberá um link para redefinir a senha.', 'success')
     } catch (err: unknown) {
@@ -58,30 +50,6 @@ export default function ForgotPassword() {
     } finally {
       setLoading(false)
     }
-  }
-
-  // Sem Supabase configurado (falta NEXT_PUBLIC_SUPABASE_ANON_KEY no .env.local): mensagem manual
-  if (!isSupabaseConfigured()) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-offwhite dark:bg-night-bg">
-        <div className="w-full max-w-sm text-center">
-          <div className="w-14 h-14 rounded-2xl bg-olive/15 dark:bg-olive/25 flex items-center justify-center mx-auto mb-6">
-            <Mail className="h-7 w-7 text-olive dark:text-olive-light" />
-          </div>
-          <h1 className="text-xl font-bold text-gray-800 dark:text-night-text">Esqueci minha senha</h1>
-          <p className="mt-2 text-sm text-gray-600 dark:text-night-muted">
-            Entre em contato com a clínica pelo WhatsApp ou telefone para redefinir sua senha com segurança.
-          </p>
-          <Link
-            href="/auth/login"
-            className="mt-6 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-olive/10 text-olive dark:text-olive-light font-medium hover:bg-olive/20 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar ao login
-          </Link>
-        </div>
-      </div>
-    )
   }
 
   const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.08 } } }

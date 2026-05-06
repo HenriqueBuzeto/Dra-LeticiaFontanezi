@@ -5,6 +5,7 @@ import { UsersService } from '../users/users.service'
 import { AppointmentsService } from '../appointments/appointments.service'
 import { VideosService } from '../videos/videos.service'
 import { RewardsService } from '../rewards/rewards.service'
+import { DatabaseService } from '../database/database.service'
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, AdminGuard)
@@ -14,6 +15,7 @@ export class AdminController {
     private appointments: AppointmentsService,
     private videos: VideosService,
     private rewards: RewardsService,
+    private database: DatabaseService,
   ) {}
 
   @Get('checkins')
@@ -39,5 +41,10 @@ export class AdminController {
       videosCount: videos.length,
       rewardsCount: rewardItems.length,
     }
+  }
+
+  @Get('db-report')
+  async dbReport() {
+    return this.database.getDbReport()
   }
 }

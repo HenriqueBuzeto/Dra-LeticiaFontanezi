@@ -1,5 +1,5 @@
 /**
- * Script para testar a comunicação da API com o banco Supabase.
+ * Script para testar a comunicação da API com o banco PostgreSQL (Neon).
  * Execute: node scripts/test-db-api.mjs
  * Requer: backend rodando em http://localhost:4000
  */
@@ -29,7 +29,7 @@ async function request(method, path, body = null, token = null) {
 }
 
 async function main() {
-  console.log('\n=== Teste de comunicação API ↔ Supabase ===\n')
+  console.log('\n=== Teste de comunicação API ↔ PostgreSQL (Neon) ===\n')
   let token = null
   let userId = null
   let appointmentId = null
