@@ -19,8 +19,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     if (!connectionString) {
       throw new Error('DATABASE_URL é obrigatória para PostgreSQL. Defina no .env (veja backend/.env.example)')
     }
+    const requiresSsl = /(^|[?&])sslmode=require(&|$)/i.test(connectionString)
     this.pool = new Pool({
       connectionString,
+      ssl: requiresSsl ? { rejectUnauthorized: false } : undefined,
       max: 10,
       idleTimeoutMillis: 30000,
     })
