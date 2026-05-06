@@ -16,8 +16,7 @@ async function bootstrap() {
     const dir = join(uploadsPath, sub)
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
   }
-  app.useStaticAssets(uploadsPath, { prefix: '/api/uploads/' })
-  app.setGlobalPrefix('api')
+  app.useStaticAssets(uploadsPath, { prefix: '/uploads/' })
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -26,6 +25,6 @@ async function bootstrap() {
   )
   const port = process.env.PORT || 4000
   await app.listen(port)
-  console.log(`Backend running on http://localhost:${port}/api`)
+  console.log(`Backend running on http://localhost:${port}`)
 }
 bootstrap()
