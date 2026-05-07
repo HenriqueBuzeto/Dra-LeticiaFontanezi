@@ -29,8 +29,9 @@ export async function GET(req: NextRequest) {
     )
     const existingTables = existingTablesRes.rows.map((r: { tablename: string }) => r.tablename)
 
-    const missingTables = expectedTables.filter((t) => !existingTables.includes(t))
-    const unexpectedTables = existingTables.filter((t) => !expectedTables.includes(t as any))
+    const expectedTablesList = expectedTables as readonly string[]
+    const missingTables = expectedTablesList.filter((t) => !existingTables.includes(t))
+    const unexpectedTables = existingTables.filter((t: string) => !expectedTablesList.includes(t))
 
     const tableReports: Record<string, any> = {}
 
