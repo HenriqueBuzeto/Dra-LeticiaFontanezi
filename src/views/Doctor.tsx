@@ -14,6 +14,12 @@ export default function Doctor() {
   const whatsappUrl = `https://wa.me/${DOCTOR_PROFILE.whatsapp.replace(/\D/g, '')}`
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(DOCTOR_PROFILE.endereco)}`
 
+  const scrollToManual = () => {
+    const el = document.getElementById('manual-ortodontico')
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   return (
     <div className="px-4 lg:px-0 py-6">
       {/* Botão Voltar */}
@@ -33,6 +39,30 @@ export default function Doctor() {
       </motion.div>
 
       <h1 className="text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Informações e cuidados</h1>
+
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-3xl overflow-hidden border border-gray-mist/50 dark:border-night-border bg-gradient-to-r from-olive/10 via-white/60 to-accent-purple/10 shadow-soft p-5 mb-6"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Manual do Paciente Ortodôntico</p>
+            <p className="text-sm text-gray-700 dark:text-gray-200 mt-1 leading-relaxed max-w-2xl">
+              Guia completo com cuidados, alimentação, higiene, elásticos, dúvidas frequentes e escolha da cor das borrachinhas.
+            </p>
+          </div>
+          <motion.button
+            type="button"
+            onClick={scrollToManual}
+            className="btn-primary whitespace-nowrap"
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            Ver manual completo
+          </motion.button>
+        </div>
+      </motion.section>
 
       {/* Lembrete da Dra */}
       <motion.div
@@ -153,7 +183,7 @@ export default function Doctor() {
         </motion.div>
       </section>
 
-      <section className="mt-10">
+      <section className="mt-10" id="manual-ortodontico">
         <OrthodonticManual whatsappUrl={whatsappUrl} schedulingHref="/doctor" />
       </section>
     </div>
