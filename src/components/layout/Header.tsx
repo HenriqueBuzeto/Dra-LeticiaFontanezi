@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Scan, Video, Calendar, User, Bell, Sun, Moon, Menu, X, CalendarPlus, Award, LayoutDashboard } from 'lucide-react'
+import { Home, Scan, Video, Calendar, User, Bell, Sun, Moon, Menu, X, CalendarPlus, Award, LayoutDashboard, Sparkles } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -14,6 +14,7 @@ const navItems = [
   ...(ENABLE_AR_SIMULATOR ? [{ to: AR_ROUTE_PATH, icon: Scan, label: AR_NAV_LABEL }] : []),
   { to: '/videos', icon: Video, label: 'Vídeos' },
   { to: '/appointments', icon: Calendar, label: 'Agenda' },
+  { to: '/doctor', icon: Sparkles, label: 'Cuidados' },
   { to: '/reminders', icon: Bell, label: 'Lembretes' },
   { to: '/pontos', icon: Award, label: 'Pontos' },
   { to: '/profile', icon: User, label: 'Perfil' },
