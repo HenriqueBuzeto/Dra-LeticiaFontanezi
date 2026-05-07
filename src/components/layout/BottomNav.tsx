@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Home, Scan, Video, Calendar, User, Bell, Award } from 'lucide-react'
+import { Home, Scan, Video, Calendar, User, Bell, Award, Sparkles } from 'lucide-react'
 import { ENABLE_AR_SIMULATOR, AR_ROUTE_PATH } from '@/features/ar/config'
 
 const items = [
@@ -11,6 +11,7 @@ const items = [
   ...(ENABLE_AR_SIMULATOR ? [{ to: AR_ROUTE_PATH, icon: Scan, label: 'AR' }] : []),
   { to: '/videos', icon: Video, label: 'Vídeos' },
   { to: '/appointments', icon: Calendar, label: 'Agenda' },
+  { to: '/doctor', icon: Sparkles, label: 'Cuidados' },
   { to: '/reminders', icon: Bell, label: 'Lembretes' },
   { to: '/pontos', icon: Award, label: 'Pontos' },
   { to: '/profile', icon: User, label: 'Perfil' },
