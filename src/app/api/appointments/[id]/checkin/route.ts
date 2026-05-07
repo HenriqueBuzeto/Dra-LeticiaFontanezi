@@ -5,7 +5,7 @@ import { appointment as appointmentTable } from '@/server/db/schema'
 import { requireAuth } from '@/server/auth/request'
 import { toHttpError } from '@/server/http/errors'
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: any) {
   try {
     const auth = requireAuth(req)
     const body = (await req.json()) as { status?: 'vai_comparecer' | 'nao_comparecer' }

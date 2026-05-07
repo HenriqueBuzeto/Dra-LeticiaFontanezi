@@ -5,7 +5,7 @@ import { appointment as appointmentTable } from '@/server/db/schema'
 import { requireAdmin } from '@/server/auth/request'
 import { toHttpError } from '@/server/http/errors'
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: any) {
   try {
     requireAdmin(req)
     const body = (await req.json()) as Record<string, unknown>
