@@ -138,16 +138,6 @@ export default function Dashboard() {
 
   return (
     <div className="px-0 py-4 sm:py-6 lg:py-0">
-      {/* Hero / Carrossel – mobile: mesma largura que os cards (sem full-bleed); desktop: sem margem extra */}
-      <section className="mb-4 lg:mb-10 lg:mx-0">
-        <HeroCarousel
-          slides={HERO_SLIDES}
-          autoplayMs={5000}
-          ctaLabel="Agendar consulta"
-          ctaHref="/doctor"
-        />
-      </section>
-
       {/* Mobile: saudação – foto do perfil (ou iniciais), texto alinhado */}
       <header className="flex lg:hidden items-center justify-between mb-6 px-4">
         <div className="flex items-center gap-3 min-h-[44px]">
@@ -173,6 +163,16 @@ export default function Dashboard() {
           </motion.button>
         </div>
       </header>
+
+      {/* Hero / Carrossel – mobile: mesma largura que os cards (sem full-bleed); desktop: sem margem extra */}
+      <section className="mb-4 lg:mb-10 lg:mx-0">
+        <HeroCarousel
+          slides={HERO_SLIDES}
+          autoplayMs={5000}
+          ctaLabel="Agendar consulta"
+          ctaHref="/doctor"
+        />
+      </section>
 
       {/* Cuidados com o aparelho – seção em destaque no início */}
       <section className="mb-8 lg:mb-12 px-4 lg:px-0">
