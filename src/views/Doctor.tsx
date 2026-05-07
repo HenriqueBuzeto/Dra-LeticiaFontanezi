@@ -7,6 +7,7 @@ import { MessageCircle, Phone, MapPin, Check, Sparkles, ArrowLeft } from 'lucide
 import { Carousel, CarouselCard } from '@/components/ui/Carousel'
 import { DOCTOR_PROFILE, DEMO_REMINDER_TIP, DEMO_VIDEOS } from '@/data/demo'
 import { Play } from 'lucide-react'
+import { OrthodonticManual } from '@/components/orthodontic-manual/OrthodonticManual'
 
 export default function Doctor() {
   const router = useRouter()
@@ -150,6 +151,10 @@ export default function Doctor() {
             </motion.a>
           </div>
         </motion.div>
+      </section>
+
+      <section className="mt-10">
+        <OrthodonticManual whatsappUrl={whatsappUrl} schedulingHref="/doctor" />
       </section>
     </div>
   )
