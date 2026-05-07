@@ -3,6 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "workspaces": [
+    "backend"
+  ],
   "scripts": {
     "create-admin": "node scripts/create-admin-user.mjs",
     "check:secrets": "node scripts/check-secrets.mjs",
