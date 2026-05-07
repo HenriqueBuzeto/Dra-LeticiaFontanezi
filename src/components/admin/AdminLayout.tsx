@@ -9,6 +9,7 @@ import {
   Calendar,
   Bell,
   Gift,
+  PackageCheck,
   Users,
   Menu,
   X,
@@ -23,6 +24,7 @@ const nav = [
   { href: '/admin/agenda', icon: Calendar, label: 'Agenda', end: false },
   { href: '/admin/lembretes', icon: Bell, label: 'Lembretes', end: false },
   { href: '/admin/recompensas', icon: Gift, label: 'Recompensas', end: false },
+  { href: '/admin/resgates', icon: PackageCheck, label: 'Resgates', end: false },
   { href: '/admin/usuarios', icon: Users, label: 'Usuários', end: false },
 ]
 

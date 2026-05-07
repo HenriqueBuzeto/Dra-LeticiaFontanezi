@@ -97,7 +97,36 @@ export async function ensureMigrated(pool: Pool) {
         name TEXT NOT NULL,
         points_required INTEGER NOT NULL,
         type TEXT NOT NULL,
-        description TEXT NOT NULL
+        description TEXT NOT NULL,
+        image_url TEXT,
+        quantity INTEGER NOT NULL DEFAULT 0,
+        active BOOLEAN NOT NULL DEFAULT TRUE,
+        category TEXT,
+        featured BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `)
+
+  await pool.query(`ALTER TABLE reward_item ADD COLUMN IF NOT EXISTS image_url TEXT`)
+  await pool.query(`ALTER TABLE reward_item ADD COLUMN IF NOT EXISTS quantity INTEGER NOT NULL DEFAULT 0`)
+  await pool.query(`ALTER TABLE reward_item ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT TRUE`)
+  await pool.query(`ALTER TABLE reward_item ADD COLUMN IF NOT EXISTS category TEXT`)
+  await pool.query(`ALTER TABLE reward_item ADD COLUMN IF NOT EXISTS featured BOOLEAN NOT NULL DEFAULT FALSE`)
+  await pool.query(`ALTER TABLE reward_item ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`)
+  await pool.query(`ALTER TABLE reward_item ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`)
+
+  await pool.query(`
+      CREATE TABLE IF NOT EXISTS reward_redemption (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+        reward_id TEXT NOT NULL REFERENCES reward_item(id) ON DELETE CASCADE,
+        points_cost INTEGER NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        requested_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        approved_at TIMESTAMPTZ,
+        delivered_at TIMESTAMPTZ,
+        rejected_reason TEXT
       )
     `)
 
@@ -118,6 +147,9 @@ export async function ensureMigrated(pool: Pool) {
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_point_log_user ON point_log(user_id)`)
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_password_reset_user ON password_reset(user_id)`)
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_password_reset_token_hash ON password_reset(token_hash)`)
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_reward_redemption_user ON reward_redemption(user_id)`)
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_reward_redemption_reward ON reward_redemption(reward_id)`)
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_reward_redemption_status ON reward_redemption(status)`)
 
   await pool.query(`
       CREATE OR REPLACE FUNCTION set_updated_at()
@@ -133,6 +165,7 @@ export async function ensureMigrated(pool: Pool) {
     { table: '"user"', triggerName: 'tr_user_updated_at' },
     { table: 'appointment', triggerName: 'tr_appointment_updated_at' },
     { table: 'video', triggerName: 'tr_video_updated_at' },
+    { table: 'reward_item', triggerName: 'tr_reward_item_updated_at' },
   ]) {
     await pool.query(`DROP TRIGGER IF EXISTS ${triggerName} ON ${table}`)
     await pool.query(`

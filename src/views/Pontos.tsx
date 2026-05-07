@@ -31,6 +31,23 @@ type RewardItem = {
   pointsRequired: number
   type: string
   description: string
+  imageUrl?: string | null
+  quantity?: number
+  active?: boolean
+  category?: string | null
+  featured?: boolean
+}
+
+type RewardRedemption = {
+  id: string
+  userId: string
+  rewardId: string
+  pointsCost: number
+  status: 'pending' | 'approved' | 'rejected' | 'delivered' | 'cancelled'
+  requestedAt: string
+  approvedAt?: string | null
+  deliveredAt?: string | null
+  rejectedReason?: string | null
 }
 
 const ACTIONS: { action: PointAction; label: string; points: number; icon: typeof Brush }[] = [
@@ -132,6 +149,7 @@ const ACTION_LABELS: Record<PointAction, string> = {
   limpeza_bucal: 'Limpeza bucal',
   uso_enxaguante: 'Enxaguante',
   checkin_semanal: 'Check-in semanal',
+  reward_redeem: 'Resgate de recompensa',
 }
 
 function formatDate(iso: string) {
@@ -149,6 +167,8 @@ export default function Pontos() {
   const [adding, setAdding] = useState<PointAction | null>(null)
   const [rewards, setRewards] = useState<RewardItem[]>([])
   const [rewardsLoading, setRewardsLoading] = useState(true)
+  const [redemptions, setRedemptions] = useState<RewardRedemption[]>([])
+  const [redeeming, setRedeeming] = useState<string | null>(null)
   const [daily, setDaily] = useState<DailyState | null>(null)
   const [streak, setStreak] = useState<StreakState | null>(null)
 
@@ -177,6 +197,19 @@ export default function Pontos() {
       .then((r) => setRewards(Array.isArray(r.data) ? r.data : []))
       .catch(() => setRewards([]))
       .finally(() => setRewardsLoading(false))
+  }, [])
+
+  const loadRedemptions = async () => {
+    try {
+      const { data } = await api.get<RewardRedemption[]>('/rewards/redemptions')
+      setRedemptions(Array.isArray(data) ? data : [])
+    } catch {
+      setRedemptions([])
+    }
+  }
+
+  useEffect(() => {
+    loadRedemptions()
   }, [])
 
   useEffect(() => {
@@ -277,6 +310,32 @@ export default function Pontos() {
     ]
     return list
   }, [recentLogs.length, streak?.current, dailyProgress.done, dailyProgress.total, levelInfo.current.level])
+
+  const redemptionByReward = useMemo(() => {
+    const map = new Map<string, RewardRedemption>()
+    for (const r of redemptions) {
+      const prev = map.get(r.rewardId)
+      if (!prev) {
+        map.set(r.rewardId, r)
+        continue
+      }
+      if (new Date(r.requestedAt).getTime() > new Date(prev.requestedAt).getTime()) map.set(r.rewardId, r)
+    }
+    return map
+  }, [redemptions])
+
+  const redeemReward = async (rewardId: string) => {
+    setRedeeming(rewardId)
+    try {
+      await api.post(`/rewards/${rewardId}/redeem`)
+      toast('Pedido de resgate enviado. A clínica vai avaliar e aprovar.', 'success')
+      await loadRedemptions()
+    } catch (err: unknown) {
+      toast((err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Não foi possível solicitar o resgate.', 'error')
+    } finally {
+      setRedeeming(null)
+    }
+  }
 
   return (
     <div className="px-4 lg:px-0 py-6 pb-24">
@@ -505,6 +564,20 @@ export default function Pontos() {
                   const canRedeem = totalPoints >= r.pointsRequired
                   const missing = Math.max(0, r.pointsRequired - totalPoints)
                   const pct = Math.round(Math.min(100, (totalPoints / Math.max(1, r.pointsRequired)) * 100))
+                  const redemption = redemptionByReward.get(r.id) ?? null
+                  const inProgress = redemption?.status === 'pending' || redemption?.status === 'approved'
+                  const statusLabel = redemption?.status
+                    ? redemption.status === 'pending'
+                      ? 'Pedido em análise'
+                      : redemption.status === 'approved'
+                        ? 'Aprovado'
+                        : redemption.status === 'delivered'
+                          ? 'Entregue'
+                          : redemption.status === 'rejected'
+                            ? 'Recusado'
+                            : 'Cancelado'
+                    : null
+                  const stock = r.quantity ?? null
                   return (
                     <motion.div
                       key={r.id}
@@ -513,6 +586,11 @@ export default function Pontos() {
                       }`}
                       whileHover={{ y: -2 }}
                     >
+                      {r.imageUrl ? (
+                        <div className="aspect-[16/9] bg-gray-mist/40 dark:bg-night-surface">
+                          <img src={r.imageUrl} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      ) : null}
                       <div className="p-5">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3">
@@ -527,6 +605,23 @@ export default function Pontos() {
                           <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-mist/50 dark:bg-night-surface text-gray-700 dark:text-night-muted">
                             {r.type}
                           </span>
+                        </div>
+
+                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                          {typeof stock === 'number' ? (
+                            <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${stock > 0 ? 'bg-olive/10 text-olive' : 'bg-gray-mist/60 text-gray-600'}`}>
+                              Estoque: {stock}
+                            </span>
+                          ) : null}
+                          {r.featured ? (
+                            <span className="text-xs font-semibold px-2 py-1 rounded-lg bg-amber-500/15 text-amber-700">Destaque</span>
+                          ) : null}
+                          {statusLabel ? (
+                            <span className="text-xs font-semibold px-2 py-1 rounded-lg bg-sky-500/15 text-sky-700">{statusLabel}</span>
+                          ) : null}
+                          {redemption?.status === 'rejected' && redemption.rejectedReason ? (
+                            <span className="text-xs text-gray-500">{redemption.rejectedReason}</span>
+                          ) : null}
                         </div>
 
                         <div className="mt-4">
@@ -545,23 +640,16 @@ export default function Pontos() {
                             )}
                             <motion.button
                               type="button"
-                              disabled={!canRedeem}
-                              onClick={() =>
-                                toast(
-                                  canRedeem
-                                    ? 'Resgate será adicionado na próxima fase. Por enquanto, combine com a clínica.'
-                                    : 'Você ainda não tem pontos suficientes para resgatar.',
-                                  canRedeem ? 'success' : 'error',
-                                )
-                              }
+                              disabled={!canRedeem || redeeming === r.id || inProgress || (typeof stock === 'number' && stock <= 0)}
+                              onClick={() => redeemReward(r.id)}
                               className={`px-4 py-2.5 rounded-2xl text-sm font-medium transition ${
-                                canRedeem
+                                canRedeem && !inProgress
                                   ? 'bg-olive text-white shadow-button hover:opacity-95'
                                   : 'bg-gray-mist/60 dark:bg-night-surface text-gray-400 cursor-not-allowed'
                               }`}
-                              whileTap={canRedeem ? { scale: 0.98 } : undefined}
+                              whileTap={canRedeem && !inProgress ? { scale: 0.98 } : undefined}
                             >
-                              Resgatar
+                              {redeeming === r.id ? 'Enviando...' : inProgress ? 'Aguardando' : 'Resgatar'}
                             </motion.button>
                           </div>
                         </div>

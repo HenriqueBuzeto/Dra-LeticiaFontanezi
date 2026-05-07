@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp, date, jsonb } from 'drizzle-orm/pg-core'
+import { pgTable, text, integer, timestamp, date, jsonb, boolean } from 'drizzle-orm/pg-core'
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -78,6 +78,25 @@ export const rewardItem = pgTable('reward_item', {
   pointsRequired: integer('points_required').notNull(),
   type: text('type').notNull(),
   description: text('description').notNull(),
+  imageUrl: text('image_url'),
+  quantity: integer('quantity').notNull().default(0),
+  active: boolean('active').notNull().default(true),
+  category: text('category'),
+  featured: boolean('featured').notNull().default(false),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const rewardRedemption = pgTable('reward_redemption', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  rewardId: text('reward_id').notNull().references(() => rewardItem.id, { onDelete: 'cascade' }),
+  pointsCost: integer('points_cost').notNull(),
+  status: text('status').notNull().default('pending'),
+  requestedAt: timestamp('requested_at', { withTimezone: true }).notNull().defaultNow(),
+  approvedAt: timestamp('approved_at', { withTimezone: true }),
+  deliveredAt: timestamp('delivered_at', { withTimezone: true }),
+  rejectedReason: text('rejected_reason'),
 })
 
 export const passwordReset = pgTable('password_reset', {
@@ -96,4 +115,5 @@ export type VideoRow = typeof video.$inferSelect
 export type ARSessionRow = typeof arSession.$inferSelect
 export type PointLogRow = typeof pointLog.$inferSelect
 export type RewardItemRow = typeof rewardItem.$inferSelect
+export type RewardRedemptionRow = typeof rewardRedemption.$inferSelect
 export type PasswordResetRow = typeof passwordReset.$inferSelect

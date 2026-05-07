@@ -12,6 +12,11 @@ type RewardItem = {
   pointsRequired: number
   type: string
   description: string
+  imageUrl?: string | null
+  quantity: number
+  active: boolean
+  category?: string | null
+  featured: boolean
 }
 
 const TIPOS = ['escova', 'kit', 'consulta', 'brinde']
@@ -22,7 +27,17 @@ export default function AdminRecompensas() {
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState<'add' | 'edit' | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [form, setForm] = useState({ name: '', pointsRequired: 50, type: 'brinde', description: '' })
+  const [form, setForm] = useState({
+    name: '',
+    pointsRequired: 50,
+    type: 'brinde',
+    description: '',
+    imageUrl: '',
+    quantity: 0,
+    active: true,
+    category: '',
+    featured: false,
+  })
 
   const load = () => {
     setLoading(true)
@@ -38,7 +53,17 @@ export default function AdminRecompensas() {
   }, [])
 
   const openAdd = () => {
-    setForm({ name: '', pointsRequired: 50, type: 'brinde', description: '' })
+    setForm({
+      name: '',
+      pointsRequired: 50,
+      type: 'brinde',
+      description: '',
+      imageUrl: '',
+      quantity: 0,
+      active: true,
+      category: '',
+      featured: false,
+    })
     setEditingId(null)
     setModal('add')
   }
@@ -48,6 +73,11 @@ export default function AdminRecompensas() {
       pointsRequired: r.pointsRequired,
       type: r.type,
       description: r.description,
+      imageUrl: r.imageUrl ?? '',
+      quantity: r.quantity ?? 0,
+      active: r.active ?? true,
+      category: r.category ?? '',
+      featured: r.featured ?? false,
     })
     setEditingId(r.id)
     setModal('edit')
@@ -123,6 +153,8 @@ export default function AdminRecompensas() {
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-night-muted uppercase">Nome</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-night-muted uppercase">Tipo</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-night-muted uppercase">Pontos</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-night-muted uppercase">Estoque</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-night-muted uppercase">Status</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-night-muted uppercase">Descrição</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-night-muted uppercase w-28">Ações</th>
                 </tr>
@@ -133,6 +165,15 @@ export default function AdminRecompensas() {
                     <td className="px-4 py-3 font-medium text-gray-800 dark:text-night-text">{r.name}</td>
                     <td className="px-4 py-3 text-gray-600 dark:text-night-muted">{r.type}</td>
                     <td className="px-4 py-3 text-olive dark:text-olive-light font-medium">{r.pointsRequired} pts</td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-night-muted">{r.quantity ?? 0}</td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${r.active ? 'bg-olive/15 text-olive' : 'bg-gray-mist/60 text-gray-600'}`}>
+                        {r.active ? 'Ativa' : 'Inativa'}
+                      </span>
+                      {r.featured ? (
+                        <span className="ml-2 text-xs font-semibold px-2 py-1 rounded-lg bg-amber-500/15 text-amber-700">Destaque</span>
+                      ) : null}
+                    </td>
                     <td className="px-4 py-3 text-gray-600 dark:text-night-muted text-sm">{r.description}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -214,6 +255,61 @@ export default function AdminRecompensas() {
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                   className="input-field"
                 />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-night-muted mb-1">Estoque</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={form.quantity}
+                    onChange={(e) => setForm((f) => ({ ...f, quantity: parseInt(e.target.value, 10) || 0 }))}
+                    className="input-field"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-night-muted mb-1">Categoria</label>
+                  <input
+                    type="text"
+                    value={form.category}
+                    onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
+                    className="input-field"
+                    placeholder="Ex: Kit, Brinde, Desconto"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-night-muted mb-1">URL da imagem</label>
+                <input
+                  type="url"
+                  value={form.imageUrl}
+                  onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
+                  className="input-field"
+                  placeholder="https://..."
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className="flex items-center gap-3 rounded-2xl border border-gray-mist/50 dark:border-night-border bg-gray-mist/20 dark:bg-night-surface px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={form.active}
+                    onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))}
+                    className="h-4 w-4 accent-olive"
+                  />
+                  <span className="text-sm font-medium text-gray-700 dark:text-night-muted">Ativa</span>
+                </label>
+                <label className="flex items-center gap-3 rounded-2xl border border-gray-mist/50 dark:border-night-border bg-gray-mist/20 dark:bg-night-surface px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={form.featured}
+                    onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
+                    className="h-4 w-4 accent-olive"
+                  />
+                  <span className="text-sm font-medium text-gray-700 dark:text-night-muted">Destaque</span>
+                </label>
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={closeModal} className="btn-secondary flex-1">Cancelar</button>

@@ -14,6 +14,11 @@ export async function PATCH(req: NextRequest, { params }: any) {
     if (body.pointsRequired !== undefined) update.pointsRequired = body.pointsRequired
     if (body.type !== undefined) update.type = body.type
     if (body.description !== undefined) update.description = body.description
+    if (body.imageUrl !== undefined) update.imageUrl = body.imageUrl
+    if (body.quantity !== undefined) update.quantity = body.quantity
+    if (body.active !== undefined) update.active = body.active
+    if (body.category !== undefined) update.category = body.category
+    if (body.featured !== undefined) update.featured = body.featured
 
     const { db } = await getDbContext()
     await db.update(rewardItemTable).set(update as any).where(eq(rewardItemTable.id, params.id))

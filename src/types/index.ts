@@ -106,6 +106,7 @@ export type PointAction =
   | 'limpeza_bucal'
   | 'uso_enxaguante'
   | 'checkin_semanal'
+  | 'reward_redeem'
 
 export interface PointLog {
   id: string
@@ -127,4 +128,9 @@ export interface RewardItem {
   pointsRequired: number
   type: 'escova' | 'kit' | 'consulta' | 'brinde'
   description: string
+  imageUrl?: string | null
+  quantity?: number
+  active?: boolean
+  category?: string | null
+  featured?: boolean
 }

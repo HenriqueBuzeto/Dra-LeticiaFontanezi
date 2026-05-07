@@ -79,6 +79,7 @@ export function PointsProvider({ children }: { children: ReactNode }) {
           limpeza_bucal: 15,
           uso_enxaguante: 5,
           checkin_semanal: 20,
+          reward_redeem: -100,
         }
         const points = pointsByAction[action] ?? 10
         const newLog = {
