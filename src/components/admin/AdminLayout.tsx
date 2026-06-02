@@ -15,8 +15,11 @@ import {
   X,
   LogOut,
   Stethoscope,
+  Sun,
+  Moon,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTheme } from '@/contexts/ThemeContext'
 
 const nav = [
   { href: '/admin', icon: LayoutDashboard, label: 'Visão geral', end: true },
@@ -30,6 +33,7 @@ const nav = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const router = useRouter()
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -125,6 +129,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               {label}
             </Link>
           ))}
+          <Link
+            href="/dashboard"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-gray-600 dark:text-night-muted hover:bg-gray-mist/60 dark:hover:bg-night-surface"
+          >
+            <Stethoscope className="h-5 w-5" />
+            Ver site
+          </Link>
+          <button
+            type="button"
+            onClick={() => {
+              toggleTheme()
+              setSidebarOpen(false)
+            }}
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm text-gray-600 dark:text-night-muted hover:bg-gray-mist/60 dark:hover:bg-night-surface"
+          >
+            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            {theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
+          </button>
         </nav>
       </aside>
 
@@ -139,15 +162,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Menu className="h-6 w-6 text-gray-600 dark:text-night-muted" />
           </button>
           <div className="flex-1 lg:flex-none" />
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Link
+              href="/dashboard"
+              className="p-2 rounded-xl text-gray-600 dark:text-night-muted hover:bg-gray-mist/60 dark:hover:bg-night-surface"
+              title="Ver site"
+            >
+              <Stethoscope className="h-5 w-5" />
+            </Link>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="p-2 rounded-xl text-gray-600 dark:text-night-muted hover:bg-gray-mist/60 dark:hover:bg-night-surface"
+              title={theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
             <span className="text-sm text-gray-600 dark:text-night-muted hidden sm:inline">{user?.nome}</span>
             <button
               type="button"
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-night-muted hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-night-muted hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 transition-colors"
             >
               <LogOut className="h-4 w-4" />
-              Sair
+              <span className="hidden sm:inline">Sair</span>
             </button>
           </div>
         </header>
