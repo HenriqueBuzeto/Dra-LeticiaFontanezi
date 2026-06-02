@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { initAREngine, sendFrame, getLastLandmarks } from '@/features/ar/arEngine'
 import { Landmark2D, mouthRoiFromLandmarks, cropToRoi } from '../faceMouthRoi'
 import { enhanceLocalContrast, estimateBrackets, analyzeBraceConfidence, type EstimatedBracket, type BraceDetectionResult } from '../services/imageProcessing'
-import { recolorImageWithMask } from '../utils/colorBlend'
+import { blendPixel, hexToRgb } from '../utils/colorBlend'
 import { generateBracketMask, featherMask, type BracketMarker } from '../utils/maskRefinement'
 
 export interface UseBraceSegmentationOptions {
@@ -33,6 +33,8 @@ export function useBraceSegmentation(options: UseBraceSegmentationOptions = {}) 
   const [error, setError] = useState<string | null>(null)
   const [modelLoaded, setModelLoaded] = useState<boolean>(false)
   const [isFaceDetected, setIsFaceDetected] = useState<boolean>(true)
+  const [hasManuallyAdjusted, setHasManuallyAdjusted] = useState<boolean>(false)
+  const [mediaAspectRatio, setMediaAspectRatio] = useState<number | null>(null)
 
   const [detectionResult, setDetectionResult] = useState<BraceDetectionResult>({
     confidence: 0,
@@ -76,6 +78,13 @@ export function useBraceSegmentation(options: UseBraceSegmentationOptions = {}) 
     }
   }, [])
 
+  // Se entrar no modo manual, marca que houve ajuste manual para liberar a exibição
+  useEffect(() => {
+    if (isManualMode) {
+      setHasManuallyAdjusted(true)
+    }
+  }, [isManualMode])
+
   // Limpa o edit canvas (manual overlay)
   const clearEditCanvas = useCallback(() => {
     const editCanvas = editCanvasRef.current
@@ -95,6 +104,8 @@ export function useBraceSegmentation(options: UseBraceSegmentationOptions = {}) 
     mouthRoiRef.current = null
     setMarkers([])
     clearEditCanvas()
+    setIsManualMode(false)
+    setHasManuallyAdjusted(false)
 
     try {
       const s = await navigator.mediaDevices.getUserMedia({
@@ -106,6 +117,7 @@ export function useBraceSegmentation(options: UseBraceSegmentationOptions = {}) 
         video.srcObject = s
         await video.play()
         setStarted(true)
+        setMediaAspectRatio(video.videoWidth / video.videoHeight)
       }
     } catch (err) {
       setError('Acesso à câmera negado ou indisponível.')
@@ -199,7 +211,7 @@ export function useBraceSegmentation(options: UseBraceSegmentationOptions = {}) 
               const result = analyzeBraceConfidence(rawImg, currentMarkers, true)
               setDetectionResult(result)
 
-              if (result.status !== 'not_detected') {
+              if (result.status !== 'not_detected' || isManualMode || hasManuallyAdjusted) {
                 // Gera máscara de aparelho baseada nos marcadores
                 const baseMask = generateBracketMask(w, h, currentMarkers, rawImg)
 
@@ -250,13 +262,18 @@ export function useBraceSegmentation(options: UseBraceSegmentationOptions = {}) 
                       const maskVal = smoothedMask[y * w + x]
                       if (maskVal > 10) {
                         const pixelIdx = (y * w + x) * 4
-                        // Recolore diretamente no ImageData geral
-                        recolorImageWithMask(
-                          rawImg,
-                          new Uint8Array([maskVal]),
-                          color,
+                        const targetColorRGB = hexToRgb(color)
+                        const blended = blendPixel(
+                          rawImg.data[pixelIdx],
+                          rawImg.data[pixelIdx + 1],
+                          rawImg.data[pixelIdx + 2],
+                          targetColorRGB,
+                          maskVal / 255,
                           blendMode
                         )
+                        rawImg.data[pixelIdx] = blended.r
+                        rawImg.data[pixelIdx + 1] = blended.g
+                        rawImg.data[pixelIdx + 2] = blended.b
                       }
                     }
                   }
@@ -281,7 +298,7 @@ export function useBraceSegmentation(options: UseBraceSegmentationOptions = {}) 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
-  }, [started, stream, compareMode, blendMode])
+  }, [started, stream, compareMode, blendMode, isManualMode, hasManuallyAdjusted])
 
   // Trata upload de imagem
   const handleImageUpload = useCallback(
@@ -290,6 +307,8 @@ export function useBraceSegmentation(options: UseBraceSegmentationOptions = {}) 
       setError(null)
       setMarkers([])
       clearEditCanvas()
+      setIsManualMode(false)
+      setHasManuallyAdjusted(false)
 
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -299,6 +318,7 @@ export function useBraceSegmentation(options: UseBraceSegmentationOptions = {}) 
         const img = new Image()
         img.onload = () => {
           originalImageRef.current = img
+          setMediaAspectRatio(img.naturalWidth / img.naturalHeight)
           const canvas = canvasRef.current
           if (canvas) {
             canvas.width = img.naturalWidth
@@ -398,10 +418,10 @@ export function useBraceSegmentation(options: UseBraceSegmentationOptions = {}) 
     const rawImg = ctx.getImageData(0, 0, w, h)
     
     // Executa a análise de confiança
-    const result = analyzeBraceConfidence(rawImg, currentMarkers, isFaceDetected)
+    const result = analyzeBraceConfidence(rawImg, currentMarkers, isFaceDetected || isManualMode || hasManuallyAdjusted)
     setDetectionResult(result)
 
-    if (result.status === 'not_detected') {
+    if (result.status === 'not_detected' && !isManualMode && !hasManuallyAdjusted) {
       return
     }
 
@@ -447,30 +467,25 @@ export function useBraceSegmentation(options: UseBraceSegmentationOptions = {}) 
           const maskVal = smoothedMask[y * w + x]
           if (maskVal > 10) {
             const pixelIdx = (y * w + x) * 4
-            // Blend pixel unitário
-            const r = rawImg.data[pixelIdx]
-            const g = rawImg.data[pixelIdx + 1]
-            const b = rawImg.data[pixelIdx + 2]
-            const targetColorRGB = {
-              r: parseInt(color.slice(1, 3), 16),
-              g: parseInt(color.slice(3, 5), 16),
-              b: parseInt(color.slice(5, 7), 16),
-            }
-            
-            // Usamos a função de blend do colorBlend.ts importada de forma inline/manual
-            const blended = recolorImageWithMask(
-              rawImg,
-              new Uint8Array([maskVal]),
-              color,
+            const targetColorRGB = hexToRgb(color)
+            const blended = blendPixel(
+              rawImg.data[pixelIdx],
+              rawImg.data[pixelIdx + 1],
+              rawImg.data[pixelIdx + 2],
+              targetColorRGB,
+              maskVal / 255,
               blendMode
             )
+            rawImg.data[pixelIdx] = blended.r
+            rawImg.data[pixelIdx + 1] = blended.g
+            rawImg.data[pixelIdx + 2] = blended.b
           }
         }
       }
     }
 
     ctx.putImageData(rawImg, 0, 0)
-  }, [markers, selectedColor, alternatingColors, isAlternating, compareMode, started, blendMode])
+  }, [markers, selectedColor, alternatingColors, isAlternating, compareMode, started, blendMode, isFaceDetected, isManualMode, hasManuallyAdjusted])
 
   useEffect(() => {
     if (!started && originalImageRef.current) {
@@ -546,6 +561,9 @@ export function useBraceSegmentation(options: UseBraceSegmentationOptions = {}) 
     setIsAlternating,
     isManualMode,
     setIsManualMode,
+    hasManuallyAdjusted,
+    setHasManuallyAdjusted,
+    mediaAspectRatio,
     brushMode,
     setBrushMode,
     brushSize,

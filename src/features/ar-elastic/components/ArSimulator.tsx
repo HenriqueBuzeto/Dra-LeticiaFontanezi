@@ -43,6 +43,8 @@ export function ArSimulator() {
     setIsAlternating,
     isManualMode,
     setIsManualMode,
+    hasManuallyAdjusted,
+    mediaAspectRatio,
     brushMode,
     setBrushMode,
     brushSize,
@@ -256,7 +258,7 @@ export function ArSimulator() {
         )}
 
         {/* Alerta de Detecção Parcial (Nível 2) */}
-        {(started || imageSrc) && detectionResult.status === 'partial' && !isManualMode && (
+        {(started || imageSrc) && detectionResult.status === 'partial' && !isManualMode && !hasManuallyAdjusted && (
           <div className="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/10 border border-amber-200/40 dark:border-amber-900/30 space-y-2.5">
             <p className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed flex items-start gap-1.5">
               <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
@@ -278,7 +280,8 @@ export function ArSimulator() {
         {/* Container Interativo do Preview */}
         <div
           ref={previewContainerRef}
-          className="relative w-full rounded-3xl overflow-hidden bg-black/90 aspect-[4/3] max-h-[60vh] border border-gray-100 dark:border-night-border shadow-inner flex items-center justify-center select-none"
+          style={{ aspectRatio: mediaAspectRatio || '4/3' }}
+          className="relative w-full rounded-3xl overflow-hidden bg-black/90 max-h-[60vh] border border-gray-100 dark:border-night-border shadow-inner flex items-center justify-center select-none"
         >
           {/* Vídeo da Câmera */}
           <video
@@ -292,7 +295,7 @@ export function ArSimulator() {
           {/* Canvas de Renderização Principal */}
           <canvas
             ref={canvasRef}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
           />
 
           {/* Canvas para Pintar Máscara Manualmente (Overlay) */}
@@ -300,7 +303,7 @@ export function ArSimulator() {
             ref={editCanvasRef}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
-            className={`absolute inset-0 w-full h-full object-contain ${
+            className={`absolute inset-0 w-full h-full object-cover ${
               brushMode !== 'marker' ? 'cursor-crosshair pointer-events-auto' : 'pointer-events-none'
             }`}
             style={{ display: isManualMode && brushMode !== 'marker' ? 'block' : 'none' }}
@@ -348,7 +351,7 @@ export function ArSimulator() {
           })}
 
           {/* Card: Aparelho Não Identificado (Nível 3) */}
-          {(started || imageSrc) && detectionResult.status === 'not_detected' && !isManualMode && (
+          {(started || imageSrc) && detectionResult.status === 'not_detected' && !isManualMode && !hasManuallyAdjusted && (
             <div className="absolute inset-0 bg-white/95 dark:bg-night-card/95 backdrop-blur-md p-6 flex flex-col items-center justify-center text-center z-10 select-text">
               <div className="w-14 h-14 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/40 flex items-center justify-center mb-3">
                 <AlertCircle className="w-7 h-7 text-rose-500" />
