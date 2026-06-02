@@ -22,7 +22,7 @@ describe('API error message', () => {
   })
 
   it('retorna fallback quando response existe mas sem message', () => {
-    const err = { response: { status: 500 } }
+    const err = { response: {} }
     expect(getApiErrorMessage(err, 'Erro interno')).toBe('Erro interno')
   })
 })
